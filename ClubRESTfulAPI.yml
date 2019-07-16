@@ -1,0 +1,528 @@
+swagger: '2.0'
+info:
+  description: Simple RESTful API with Spring Boot, integrating MongoDB & MySQL databases https://github.com/goyar/ClubRESTfulAPI
+  version: "1.1.1"
+  title: SpringClubApi
+  termsOfService: 'urn:tos'
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+host: '3.212.115.138:8001'
+schemes: ["http"]
+basePath: /
+tags:
+  - name: guardian-mongo-controller
+    description: Guardian Mongo Controller
+  - name: player-mongo-controller
+    description: Player Mongo Controller
+  - name: charge-mysql-controller
+    description: Charge Mysql Controller
+  - name: bill-mysql-controller
+    description: Bill Mysql Controller
+paths:
+  /bill/allbill:
+    get:
+      tags:
+        - bill-mysql-controller
+      summary: Returns a list that contains all the bills registered in the database
+      operationId: getAllBillsUsingGET
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Bill'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '/bill/{guardian_id}':
+    post:
+      tags:
+        - bill-mysql-controller
+      summary: Creates a new bill in the database assigned to a particular {guardian_id} if the {guardian_id} registers not billed charges
+      operationId: getBillsByIdUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - 'application/json'
+      parameters:
+        - name: guardian_id
+          in: path
+          description: guardian_id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Bill'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '/bill/{id}/overview':
+    get:
+      tags:
+        - bill-mysql-controller
+      summary: Returns the overview information regarding to a particular bill by its {id}
+      operationId: getBillsByIdUsingGET
+      produces:
+        - 'application/json'
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Bill'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '/bill/{id}/details':
+    get:
+      tags:
+        - bill-mysql-controller
+      summary: Returns the detailed information regarding to a particular bill by its {id} by attaching the informartion of the charges included in the particular bill
+      operationId: getBillsDetailsUsingGET
+      produces:
+        - 'application/json'
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/BillDetail'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /charge/allcharge:
+    get:
+      tags:
+        - charge-mysql-controller
+      summary: Returns a list that contains all the charges registered in the database
+      operationId: getAllChargesUsingGET
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Charge'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '/charge/{id}':
+    get:
+      tags:
+        - charge-mysql-controller
+      summary: Returns a the information regarding a particular charge given its {id}
+      operationId: getChargeByIdUsingGET
+      produces:
+        - 'application/json'
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Charge'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /charge:
+    post:
+      tags:
+        - charge-mysql-controller
+      summary: Stores information from a new charge in a new record of the database
+      operationId: addChargeUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - 'application/json'
+      parameters:
+        - in: body
+          name: charge
+          description: Charge information
+          required: true
+          schema:
+            type: object
+            required:
+              - guardian_id
+              - player_id
+              - amount
+            properties:
+              guardian_id:
+                type: string
+              player_id:
+                type: string
+              amount:
+                type: integer
+              description:
+                type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Charge'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - charge-mysql-controller
+      summary: Updates the information regarding a existing charge in the database
+      operationId: updateChargeUsingPUT
+      consumes:
+        - application/json
+      produces:
+        - 'application/json'
+      parameters:
+        - in: body
+          name: charge
+          description: charge
+          required: true
+          schema:
+            $ref: '#/definitions/Charge'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Charge'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /guardian/allguardian:
+    get:
+      tags:
+        - guardian-mongo-controller
+      summary: Returns a list that contains all the guardians registered in the database
+      operationId: getAllGuardiansUsingGET
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Guardian'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '/guardian/{id}':
+    get:
+      tags:
+        - guardian-mongo-controller
+      summary: Returns a the information regarding a particular guardian given its {id}
+      operationId: getGuardianByIdUsingGET
+      produces:
+        - 'application/json'
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Guardian'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /player/allplayer:
+    get:
+      tags:
+        - player-mongo-controller
+      summary: Returns a list that contains all the guardians registered in the database
+      operationId: getAllPlayersUsingGET
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Player'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '/player/{id}':
+    get:
+      tags:
+        - player-mongo-controller
+      summary: Returns a the information regarding a particular player given its {id}
+      operationId: getPlayerByIdUsingGET
+      produces:
+        - 'application/json'
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Player'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+definitions:
+  Bill:
+    type: object
+    properties:
+      due_date:
+        type: string
+        format: date-time
+      guardian_id:
+        type: string
+      id:
+        type: integer
+        format: int32
+      issue_date:
+        type: string
+        format: date-time
+      paid_amount:
+        type: number
+        format: double
+      paid_date:
+        type: string
+        format: date-time
+      total_amount:
+        type: number
+        format: double
+    title: Bill
+  BillDetail:
+    type: object
+    properties:
+      bill:
+        $ref: '#/definitions/Bill'
+      chargeList:
+        type: array
+        items:
+          $ref: '#/definitions/Charge'
+    title: BillDetail
+  Charge:
+    type: object
+    properties:
+      amount:
+        type: number
+        format: float
+      bill_id:
+        type: integer
+        format: int32
+      date:
+        type: string
+        format: date-time
+      description:
+        type: string
+      guardian_id:
+        type: string
+      id:
+        type: integer
+        format: int32
+      player_id:
+        type: string
+      state:
+        type: string
+    title: Charge
+  Guardian:
+    type: object
+    properties:
+      addressCity:
+        type: string
+      addressState:
+        type: string
+      addressStreet:
+        type: string
+      addressZip:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      phoneNumber:
+        type: string
+    title: Guardian
+  Player:
+    type: object
+    properties:
+      birthdate:
+        type: string
+        format: date-time
+      firstName:
+        type: string
+      guardian:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      team:
+        type: string
+    title: Player
+  ModelAndView:
+    type: object
+    properties:
+      empty:
+        type: boolean
+      model:
+        type: object
+      modelMap:
+        type: object
+        additionalProperties:
+          type: object
+      reference:
+        type: boolean
+      status:
+        type: string
+        enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+      view:
+        $ref: '#/definitions/View'
+      viewName:
+        type: string
+    title: ModelAndView
+  View:
+    type: object
+    properties:
+      contentType:
+        type: string
+    title: View
