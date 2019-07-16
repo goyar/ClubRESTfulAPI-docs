@@ -8,7 +8,8 @@ info:
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0'
-host: '3.212.115.138:8001'
+#host: '3.212.115.138:8001'    
+host: 'localhost:8001'
 schemes: ["http"]
 basePath: /
 tags:
@@ -21,12 +22,12 @@ tags:
   - name: bill-mysql-controller
     description: Bill Mysql Controller
 paths:
-  /bill/allbill:
+  /guardian/allguardian:
     get:
       tags:
-        - bill-mysql-controller
-      summary: Returns a list that contains all the bills registered in the database
-      operationId: getAllBillsUsingGET
+        - guardian-mongo-controller
+      summary: Returns a list that contains all the guardians registered in the database
+      operationId: getAllGuardiansUsingGET
       produces:
         - 'application/json'
       responses:
@@ -35,94 +36,84 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Bill'
+              $ref: '#/definitions/Guardian'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
-        '404':
-          description: Not Found
-  '/bill/{guardian_id}':
-    post:
+  '/guardian/{id}':
+    get:
       tags:
-        - bill-mysql-controller
-      summary: Creates a new bill in the database assigned to a particular {guardian_id} if the {guardian_id} registers not billed charges
-      operationId: getBillsByIdUsingPOST
-      consumes:
-        - application/json
+        - guardian-mongo-controller
+      summary: Returns a the information regarding a particular guardian given its {id}
+      operationId: getGuardianByIdUsingGET
       produces:
         - 'application/json'
       parameters:
-        - name: guardian_id
+        - name: id
           in: path
-          description: guardian_id
+          description: Any 'id' value from the '/guardian/allguardian' endpoint
           required: true
           type: string
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Bill'
-        '201':
-          description: Created
+            $ref: '#/definitions/Guardian'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
         '404':
           description: Not Found
-  '/bill/{id}/overview':
+          schema:
+            $ref: '#/definitions/ApiError'
+  /player/allplayer:
     get:
       tags:
-        - bill-mysql-controller
-      summary: Returns the overview information regarding to a particular bill by its {id}
-      operationId: getBillsByIdUsingGET
+        - player-mongo-controller
+      summary: Returns a list that contains all the guardians registered in the database
+      operationId: getAllPlayersUsingGET
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Player'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  '/player/{id}':
+    get:
+      tags:
+        - player-mongo-controller
+      summary: Returns a the information regarding a particular player given its {id}
+      operationId: getPlayerByIdUsingGET
       produces:
         - 'application/json'
       parameters:
         - name: id
           in: path
-          description: id
+          description: Any 'id' value from the '/player/allplayer' endpoint
           required: true
-          type: integer
-          format: int32
+          type: string
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Bill'
+            $ref: '#/definitions/Player'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
         '404':
           description: Not Found
-  '/bill/{id}/details':
-    get:
-      tags:
-        - bill-mysql-controller
-      summary: Returns the detailed information regarding to a particular bill by its {id} by attaching the informartion of the charges included in the particular bill
-      operationId: getBillsDetailsUsingGET
-      produces:
-        - 'application/json'
-      parameters:
-        - name: id
-          in: path
-          description: id
-          required: true
-          type: integer
-          format: int32
-      responses:
-        '200':
-          description: OK
           schema:
-            $ref: '#/definitions/BillDetail'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
+            $ref: '#/definitions/ApiError'
   /charge/allcharge:
     get:
       tags:
@@ -142,8 +133,6 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
-        '404':
-          description: Not Found
   '/charge/{id}':
     get:
       tags:
@@ -155,7 +144,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: id
+          description: Any 'id' value from the '/charge/allcharge' endpoint
           required: true
           type: integer
           format: int32
@@ -170,6 +159,8 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
+          schema:
+            $ref: '#/definitions/ApiError'
   /charge:
     post:
       tags:
@@ -213,6 +204,8 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
+          schema:
+            $ref: '#/definitions/ApiError'
     put:
       tags:
         - charge-mysql-controller
@@ -257,12 +250,14 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-  /guardian/allguardian:
+          schema:
+            $ref: '#/definitions/ApiError'
+  /bill/allbill:
     get:
       tags:
-        - guardian-mongo-controller
-      summary: Returns a list that contains all the guardians registered in the database
-      operationId: getAllGuardiansUsingGET
+        - bill-mysql-controller
+      summary: Returns a list that contains all the bills registered in the database
+      operationId: getAllBillsUsingGET
       produces:
         - 'application/json'
       responses:
@@ -271,19 +266,48 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Guardian'
+              $ref: '#/definitions/Bill'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  '/bill/{guardian_id}':
+    post:
+      tags:
+        - bill-mysql-controller
+      summary: Creates a new bill in the database assigned to a particular {guardian_id} if the {guardian_id} registers not billed charges
+      operationId: getBillsByIdUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - 'application/json'
+      parameters:
+        - name: guardian_id
+          in: path
+          description: guardian_id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Bill'
+        '201':
+          description: Created
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
         '404':
           description: Not Found
-  '/guardian/{id}':
+          schema:
+            $ref: '#/definitions/ApiError'
+  '/bill/{id}/overview':
     get:
       tags:
-        - guardian-mongo-controller
-      summary: Returns a the information regarding a particular guardian given its {id}
-      operationId: getGuardianByIdUsingGET
+        - bill-mysql-controller
+      summary: Returns the overview information regarding to a particular bill by its {id}
+      operationId: getBillsByIdUsingGET
       produces:
         - 'application/json'
       parameters:
@@ -291,45 +315,27 @@ paths:
           in: path
           description: id
           required: true
-          type: string
+          type: integer
+          format: int32
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Guardian'
+            $ref: '#/definitions/Bill'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
         '404':
           description: Not Found
-  /player/allplayer:
-    get:
-      tags:
-        - player-mongo-controller
-      summary: Returns a list that contains all the guardians registered in the database
-      operationId: getAllPlayersUsingGET
-      produces:
-        - 'application/json'
-      responses:
-        '200':
-          description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Player'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  '/player/{id}':
+            $ref: '#/definitions/ApiError'
+  '/bill/{id}/details':
     get:
       tags:
-        - player-mongo-controller
-      summary: Returns a the information regarding a particular player given its {id}
-      operationId: getPlayerByIdUsingGET
+        - bill-mysql-controller
+      summary: Returns the detailed information regarding to a particular bill by its {id} by attaching the informartion of the charges included in the particular bill
+      operationId: getBillsDetailsUsingGET
       produces:
         - 'application/json'
       parameters:
@@ -337,18 +343,21 @@ paths:
           in: path
           description: id
           required: true
-          type: string
+          type: integer
+          format: int32
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Player'
+            $ref: '#/definitions/BillDetail'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
         '404':
           description: Not Found
+          schema:
+            $ref: '#/definitions/ApiError'
 definitions:
   Guardian:
     type: object
@@ -447,9 +456,11 @@ definitions:
         items:
           $ref: '#/definitions/Charge'
     title: BillDetail
-  View:
+  ApiError:
     type: object
     properties:
-      contentType:
+      status:
         type: string
-    title: View
+      message:
+        type: string
+    title: ApiError
